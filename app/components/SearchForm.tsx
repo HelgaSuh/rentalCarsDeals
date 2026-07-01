@@ -18,6 +18,7 @@ const TODAY = (() => {
 
 export function SearchForm() {
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     control,
@@ -44,12 +45,14 @@ export function SearchForm() {
   const pickupDate = watch('pickupDate')
   const returnMinDate = pickupDate ?? TODAY
 
-  const onSubmit = (values: SearchFormValues) => {
+  const onSubmit = async (values: SearchFormValues) => {
     setSubmitError(null)
+    setIsLoading(true)
     try {
       const params = buildRedirectParams(values)
       submitAsFormRedirect('https://api.int.therentalradar.com/v1/cars/redirect', params)
     } catch {
+      setIsLoading(false)
       setSubmitError('Search failed — please try again.')
     }
   }
@@ -62,6 +65,14 @@ export function SearchForm() {
 
   return (
       <div className="rounded-2xl bg-blue-950/70 p-4 shadow-lg lg:p-3">
+        {(isLoading || isSubmitting) && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-white" aria-hidden="true" />
+              <p className="text-white font-medium">Searching for rentals...</p>
+            </div>
+          </div>
+        )}
         <div className="mb-4">
           <Controller
               name="sameDropoff"
@@ -205,14 +216,19 @@ export function SearchForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-blue-700 disabled:opacity-70 min-[1109px]:w-auto min-[1109px]:whitespace-nowrap"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 disabled:bg-blue-600/60 disabled:cursor-not-allowed disabled:opacity-80 min-[1109px]:w-auto min-[1109px]:whitespace-nowrap"
             >
               {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  <span>Searching...</span>
+                </>
               ) : (
-                <Search className="h-4 w-4" aria-hidden="true" />
+                <>
+                  <Search className="h-4 w-4" aria-hidden="true" />
+                  <span>Search</span>
+                </>
               )}
-              Search
             </button>
             {submitError && (
               <p className="mt-1 text-center text-xs text-red-600 min-[1109px]:text-right" role="alert">
