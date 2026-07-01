@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Search, Loader2, ChevronDown } from 'lucide-react'
 import type { SearchFormValues, LocationResult } from '@/lib/types'
-import { buildRedirectParams } from '@/lib/buildRedirectParams'
+import { buildRedirectParams, submitAsFormRedirect } from '@/lib/buildRedirectParams'
 import { LocationInput } from './LocationInput'
 import { DatePickerInput } from './DatePickerInput'
 import { TimeSelect } from './TimeSelect'
@@ -44,16 +44,11 @@ export function SearchForm() {
   const pickupDate = watch('pickupDate')
   const returnMinDate = pickupDate ?? TODAY
 
-  const onSubmit = async (values: SearchFormValues) => {
+  const onSubmit = (values: SearchFormValues) => {
     setSubmitError(null)
     try {
-      const body = buildRedirectParams(values)
-      const res = await fetch('https://api.int.therentalradar.com/v1/cars/redirect', {
-        method: 'POST',
-        body,
-        redirect: 'follow',
-      })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const params = buildRedirectParams(values)
+      submitAsFormRedirect('https://api.int.therentalradar.com/v1/cars/redirect', params)
     } catch {
       setSubmitError('Search failed — please try again.')
     }

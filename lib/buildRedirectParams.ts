@@ -26,7 +26,7 @@ function daysBetween(from: Date, to: Date): number {
   return Math.floor((b.getTime() - a.getTime()) / 86_400_000)
 }
 
-export function buildRedirectParams(values: SearchFormValues): FormData {
+export function buildRedirectParams(values: SearchFormValues): Record<string, string | number | undefined> {
   const { pickupLocation, dropoffLocation, sameDropoff, pickupDate, returnDate, pickupTime, returnTime } = values
 
   if (!pickupLocation || !pickupDate || !returnDate) {
@@ -36,7 +36,15 @@ export function buildRedirectParams(values: SearchFormValues): FormData {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  const params: RedirectParams = {
+  const pickupDateTime = new Date(pickupDate)
+  const [pickupHours, pickupMinutes] = pickupTime.split(':').map(Number)
+  pickupDateTime.setHours(pickupHours, pickupMinutes, 0, 0)
+
+  const returnDateTime = new Date(returnDate)
+  const [returnHours, returnMinutes] = returnTime.split(':').map(Number)
+  returnDateTime.setHours(returnHours, returnMinutes, 0, 0)
+
+  const params: Record<string, string | number | undefined> = {
     vert: 'cars',
     tab: 'front',
     lng: typeof navigator !== 'undefined' ? (navigator.language ?? 'en') : 'en',
@@ -60,9 +68,28 @@ export function buildRedirectParams(values: SearchFormValues): FormData {
     params['drop-off-destination-key'] = dropoffLocation.type
   }
 
-  const fd = new FormData()
-  for (const [key, val] of Object.entries(params)) {
-    if (val !== undefined) fd.append(key, String(val))
-  }
-  return fd
+  return params
+}
+
+export function submitAsFormRedirect(
+  endpoint: string,
+  params: Record<string, string | number | undefined>
+): void {
+  const form = document.createElement('form')
+  form.method = 'POST'
+  form.action = endpoint
+  form.enctype = 'multipart/form-data'
+  form.style.display = 'none'
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined) return
+    const input = document.createElement('input')
+    input.type = 'hidden'
+    input.name = key
+    input.value = String(value)
+    form.appendChild(input)
+  })
+
+  document.body.appendChild(form)
+  form.submit()
 }
