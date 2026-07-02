@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Search, Loader2, ChevronDown } from 'lucide-react'
 import type { SearchFormValues, LocationResult } from '@/lib/types'
@@ -9,6 +9,7 @@ import { LocationInput } from './LocationInput'
 import { DatePickerInput } from './DatePickerInput'
 import { TimeSelect } from './TimeSelect'
 import { PriceAlertCheckbox } from './PriceAlertCheckbox'
+import {FieldError} from "./FieldError";
 
 const TODAY = (() => {
   const d = new Date()
@@ -25,6 +26,7 @@ export function SearchForm() {
     handleSubmit,
     watch,
     getValues,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<SearchFormValues>({
     defaultValues: {
@@ -43,7 +45,14 @@ export function SearchForm() {
 
   const sameDropoff = watch('sameDropoff')
   const pickupDate = watch('pickupDate')
+  const returnDate = watch('returnDate')
   const returnMinDate = pickupDate ?? TODAY
+
+  useEffect(() => {
+    if (errors.returnTime) {
+      trigger('returnTime')
+    }
+  }, [returnDate])
 
   const onSubmit = async (values: SearchFormValues) => {
     setSubmitError(null)
@@ -99,7 +108,7 @@ export function SearchForm() {
 
           {/* Pick-up location */}
           <div className={`rounded-lg bg-white min-[1109px]:mx-1 ${
-            locError('pickupLocation') ? 'border-2 border-red-600' : 'border border-gray-200'
+            locError('pickupLocation') ? 'border-2 border-red-600' : ''
           } ${sameDropoff ? 'min-[1109px]:flex-[2]' : 'min-[1109px]:flex-[1] min-[1517px]:flex-[2]'}`}>
             <LocationInput
               variant="flat"
@@ -118,7 +127,7 @@ export function SearchForm() {
           {/* Drop-off location (conditional) */}
           {!sameDropoff && (
             <div className={`rounded-lg bg-white min-[1109px]:flex-[1] min-[1109px]:mx-1 min-[1517px]:flex-[2] ${
-              locError('dropoffLocation') ? 'border-2 border-red-600' : 'border border-gray-200'
+              locError('dropoffLocation') ? 'border-2 border-red-600' : ''
             }`}>
               <LocationInput
                 variant="flat"
@@ -168,9 +177,9 @@ export function SearchForm() {
           </div>
 
           {/* Return date + time */}
-          <div className={`flex items-stretch rounded-lg bg-white divide-x divide-gray-200 min-[1109px]:flex-1 min-[1109px]:mx-1 ${
+          <div className={`group relative flex items-stretch rounded-lg bg-white divide-x divide-gray-200 min-[1109px]:flex-1 min-[1109px]:mx-1 ${
             dateError('returnDate') || errors.returnTime?.message ? 'border-2 border-red-600' : 'border border-gray-200'
-          }`}>`
+          }`}>
             <div className="flex-1 min-w-0">
               <DatePickerInput
                 variant="flat"
@@ -214,9 +223,9 @@ export function SearchForm() {
                     )
                   },
                 }}
-                error={errors.returnTime?.message}
-              />
+                />
             </div>
+            {errors.returnTime?.message && (<FieldError message={errors.returnTime.message} id={"returnTime-error"}/>)}
           </div>
 
           {/* Search button */}
