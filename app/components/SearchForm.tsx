@@ -197,53 +197,55 @@ export function SearchForm() {
 
               {/* Return date + time */}
               <div className="flex flex-col min-[1109px]:flex-1 min-[1109px]:mx-1">
-                <div className={`group relative flex items-stretch rounded-lg bg-white divide-x divide-gray-200 ${
+                <div className={`group relative flex items-stretch rounded-lg bg-white ${
                     dateError('returnDate') || errors.returnTime?.message ? 'border border-red-600' : 'border border-gray-200'
                 }`}>
-                  <div className="flex-1 min-w-0">
-                    <DatePickerInput
-                        variant="flat"
-                        name="returnDate"
-                        label="Return Date"
-                        control={control}
-                        minDate={returnMinDate}
-                        rules={{
-                          validate: (v: Date | null) => {
-                            if (!v) return 'Return date is required'
-                            const { pickupDate: pd } = getValues()
-                            if (pd && v < pd) return 'Return date must be on or after pick-up date'
-                            return true
-                          },
-                        }}
-                        error={dateError('returnDate')}
-                    />
-                  </div>
-                  <div className="w-24 shrink-0">
-                    <TimeSelect
-                        variant="flat"
-                        name="returnTime"
-                        label="Time"
-                        control={control}
-                        rules={{
-                          validate: (returnTime: string) => {
-                            const { pickupDate: pd, returnDate: rd, pickupTime: pt } = getValues()
-                            if (!pd || !rd) return true
-                            const sameDay =
-                                pd.getFullYear() === rd.getFullYear() &&
-                                pd.getMonth() === rd.getMonth() &&
-                                pd.getDate() === rd.getDate()
-                            if (!sameDay) return true
-                            const [ph, pm] = pt.split(':').map(Number)
-                            const [rh, rm] = returnTime.split(':').map(Number)
-                            const pickupMins = ph * 60 + pm
-                            const returnMins = rh * 60 + rm
-                            return (
-                                returnMins - pickupMins >= 60 ||
-                                'Return time must be at least one hour after pick-up on the same day'
-                            )
-                          },
-                        }}
-                    />
+                  <div className="flex flex-1 items-stretch divide-x divide-gray-200">
+                    <div className="flex-1 min-w-0">
+                      <DatePickerInput
+                          variant="flat"
+                          name="returnDate"
+                          label="Return Date"
+                          control={control}
+                          minDate={returnMinDate}
+                          rules={{
+                            validate: (v: Date | null) => {
+                              if (!v) return 'Return date is required'
+                              const { pickupDate: pd } = getValues()
+                              if (pd && v < pd) return 'Return date must be on or after pick-up date'
+                              return true
+                            },
+                          }}
+                          error={dateError('returnDate')}
+                      />
+                    </div>
+                    <div className="w-24 shrink-0">
+                      <TimeSelect
+                          variant="flat"
+                          name="returnTime"
+                          label="Time"
+                          control={control}
+                          rules={{
+                            validate: (returnTime: string) => {
+                              const { pickupDate: pd, returnDate: rd, pickupTime: pt } = getValues()
+                              if (!pd || !rd) return true
+                              const sameDay =
+                                  pd.getFullYear() === rd.getFullYear() &&
+                                  pd.getMonth() === rd.getMonth() &&
+                                  pd.getDate() === rd.getDate()
+                              if (!sameDay) return true
+                              const [ph, pm] = pt.split(':').map(Number)
+                              const [rh, rm] = returnTime.split(':').map(Number)
+                              const pickupMins = ph * 60 + pm
+                              const returnMins = rh * 60 + rm
+                              return (
+                                  returnMins - pickupMins >= 60 ||
+                                  'Return time must be at least one hour after pick-up on the same day'
+                              )
+                            },
+                          }}
+                      />
+                    </div>
                   </div>
                   {errors.returnTime?.message && (
                       <FieldError message={errors.returnTime.message} id="returnTime-error" className="hidden min-[1109px]:block" />

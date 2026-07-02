@@ -5,13 +5,13 @@ export default function Home() {
   return (
     <main className="flex flex-col">
       {/* Hero + promo wrapper */}
-      <div className="mx-4 overflow-hidden rounded-2xl shadow-lg md:mx-8">
+      <div className="mx-4 rounded-2xl shadow-lg md:mx-8">
         {/* Hero section */}
         <section
-          className="relative flex min-h-[480px] flex-col items-center justify-center bg-cover bg-center px-4 py-16"
+          className="relative flex min-h-[480px] flex-col items-center justify-center rounded-t-2xl bg-cover bg-center px-4 py-16"
           style={{ backgroundImage: "url('/car.png')" }}
         >
-          <div className="absolute inset-0 bg-black/40" aria-hidden="true" />
+          <div className="absolute inset-0 rounded-t-2xl bg-black/40" aria-hidden="true" />
 
           <div className="relative z-10 w-full max-w-9xl">
             <h1 className="mb-8 text-center text-3xl leading-tight text-white drop-shadow-md md:text-5xl">
@@ -23,7 +23,7 @@ export default function Home() {
         </section>
 
         {/* Promo banner */}
-        <section className="bg-[#1e2a4a] py-3 text-center">
+        <section className="rounded-b-2xl bg-[#1e2a4a] py-3 text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-white">
             Find the best car rental deals and book now!
           </p>
