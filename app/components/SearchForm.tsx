@@ -164,7 +164,7 @@ export function SearchForm() {
                 error={dateError('pickupDate')}
               />
             </div>
-         `   <div className="w-24 shrink-0">
+            <div className="w-24 shrink-0">
               <TimeSelect
                 variant="flat"
                 name="pickupTime"
