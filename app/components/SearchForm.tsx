@@ -75,12 +75,12 @@ export function SearchForm() {
   return (
       <div className="rounded-2xl bg-blue-950/70 p-4 shadow-lg lg:p-3">
         {(isLoading || isSubmitting) && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-white" aria-hidden="true" />
-              <p className="text-white font-medium">Searching for rentals...</p>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <div className="flex flex-col items-center gap-3">
+                <Loader2 className="h-8 w-8 animate-spin text-white" aria-hidden="true" />
+                <p className="text-white font-medium">Searching for rentals...</p>
+              </div>
             </div>
-          </div>
         )}
         <div className="mb-4">
           <Controller
@@ -100,177 +100,205 @@ export function SearchForm() {
               )}
           />
         </div>
-    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      {/* Search card */}
-      <div className="rounded-2xl bg-amber-400 p-2 shadow-lg lg:p-2">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          {/* Search card */}
+          <div className="rounded-2xl bg-amber-400 p-2 shadow-lg lg:p-2">
 
-        <div className="flex flex-col gap-2 min-[1109px]:flex-row min-[1109px]:flex-nowrap min-[1109px]:items-stretch min-[1109px]:gap-0">
+            <div className="flex flex-col gap-2 min-[1109px]:flex-row min-[1109px]:flex-nowrap min-[1109px]:items-stretch min-[1109px]:gap-0">
 
-          {/* Pick-up location */}
-          <div className={`rounded-lg bg-white min-[1109px]:mx-1 ${
-            locError('pickupLocation') ? 'border-2 border-red-600' : ''
-          } ${sameDropoff ? 'min-[1109px]:flex-[2]' : 'min-[1109px]:flex-[1] min-[1517px]:flex-[2]'}`}>
-            <LocationInput
-              variant="flat"
-              name="pickupLocation"
-              label={sameDropoff ? 'Pick-up & Drop-off' : 'Pick-up location'}
-              placeholder="City or airport"
-              control={control}
-              rules={{
-                validate: (v: LocationResult | null) =>
-                  v !== null || 'Pick-up location is required - select from the list',
-              }}
-              error={locError('pickupLocation')}
-            />
-          </div>
+              {/* Pick-up location */}
+              <div className={`min-[1109px]:mx-1 ${sameDropoff ? 'min-[1109px]:flex-[2]' : 'min-[1109px]:flex-[1] min-[1517px]:flex-[2]'}`}>
+                <div className={`min-[1109px]:h-full rounded-lg bg-white ${
+                    locError('pickupLocation') ? 'border border-red-600' : 'border border-gray-200'
+                }`}>
+                  <LocationInput
+                      variant="flat"
+                      name="pickupLocation"
+                      label={sameDropoff ? 'Pick-up & Drop-off' : 'Pick-up location'}
+                      placeholder="City or airport"
+                      control={control}
+                      rules={{
+                        validate: (v: LocationResult | null) =>
+                            v !== null || 'Pick-up location is required - select from the list',
+                      }}
+                      error={locError('pickupLocation')}
+                  />
+                </div>
+                {locError('pickupLocation') && (
+                    <p className="min-[1109px]:hidden mt-1 text-xs text-red-600 px-1" role="alert">{locError('pickupLocation')}</p>
+                )}
+              </div>
 
-          {/* Drop-off location (conditional) */}
-          {!sameDropoff && (
-            <div className={`rounded-lg bg-white min-[1109px]:flex-[1] min-[1109px]:mx-1 min-[1517px]:flex-[2] ${
-              locError('dropoffLocation') ? 'border-2 border-red-600' : ''
-            }`}>
-              <LocationInput
-                variant="flat"
-                name="dropoffLocation"
-                label="Drop-off location"
-                placeholder="City or airport"
-                control={control}
-                rules={{
-                  validate: (v: LocationResult | null) => {
-                    const { sameDropoff: same } = getValues()
-                    if (!same && !v) return 'Drop-off location is required — select from the list'
-                    return true
-                  },
-                }}
-                error={locError('dropoffLocation')}
-              />
-            </div>
-          )}
-
-          {/* Pick-up date + time */}
-          <div className={`flex items-stretch rounded-lg bg-white divide-x divide-gray-200 min-[1109px]:flex-1 min-[1109px]:mx-1 ${
-            dateError('pickupDate') || errors.pickupTime?.message ? 'border-2 border-red-600' : 'border border-gray-200'
-          }`}>
-            <div className="flex-1 min-w-0">
-              <DatePickerInput
-                variant="flat"
-                name="pickupDate"
-                label="Pick-Up Date"
-                control={control}
-                minDate={TODAY}
-                rules={{
-                  validate: (v: Date | null) => v !== null || 'Pick-up date is required',
-                }}
-                error={dateError('pickupDate')}
-              />
-            </div>
-            <div className="w-24 shrink-0">
-              <TimeSelect
-                variant="flat"
-                name="pickupTime"
-                label="Time"
-                control={control}
-                rules={{ required: 'Pick-up time is required' }}
-                error={errors.pickupTime?.message}
-              />
-            </div>
-          </div>
-
-          {/* Return date + time */}
-          <div className={`group relative flex items-stretch rounded-lg bg-white divide-x divide-gray-200 min-[1109px]:flex-1 min-[1109px]:mx-1 ${
-            dateError('returnDate') || errors.returnTime?.message ? 'border-2 border-red-600' : 'border border-gray-200'
-          }`}>
-            <div className="flex-1 min-w-0">
-              <DatePickerInput
-                variant="flat"
-                name="returnDate"
-                label="Return Date"
-                control={control}
-                minDate={returnMinDate}
-                rules={{
-                  validate: (v: Date | null) => {
-                    if (!v) return 'Return date is required'
-                    const { pickupDate: pd } = getValues()
-                    if (pd && v < pd) return 'Return date must be on or after pick-up date'
-                    return true
-                  },
-                }}
-                error={dateError('returnDate')}
-              />
-            </div>
-            <div className="w-24 shrink-0">
-              <TimeSelect
-                variant="flat"
-                name="returnTime"
-                label="Time"
-                control={control}
-                rules={{
-                  validate: (returnTime: string) => {
-                    const { pickupDate: pd, returnDate: rd, pickupTime: pt } = getValues()
-                    if (!pd || !rd) return true
-                    const sameDay =
-                      pd.getFullYear() === rd.getFullYear() &&
-                      pd.getMonth() === rd.getMonth() &&
-                      pd.getDate() === rd.getDate()
-                    if (!sameDay) return true
-                    const [ph, pm] = pt.split(':').map(Number)
-                    const [rh, rm] = returnTime.split(':').map(Number)
-                    const pickupMins = ph * 60 + pm
-                    const returnMins = rh * 60 + rm
-                    return (
-                      returnMins - pickupMins >= 60 ||
-                      'Return time must be at least one hour after pick-up on the same day'
-                    )
-                  },
-                }}
-                />
-            </div>
-            {errors.returnTime?.message && (<FieldError message={errors.returnTime.message} id={"returnTime-error"}/>)}
-          </div>
-
-          {/* Search button */}
-          <div className="flex flex-col justify-center min-[1109px]:shrink-0 min-[1109px]:mx-1">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 disabled:bg-blue-600/60 disabled:cursor-not-allowed disabled:opacity-80 min-[1109px]:w-auto min-[1109px]:whitespace-nowrap"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  <span>Searching...</span>
-                </>
-              ) : (
-                <>
-                  <Search className="h-4 w-4" aria-hidden="true" />
-                  <span>Search</span>
-                </>
+              {/* Drop-off location (conditional) */}
+              {!sameDropoff && (
+                  <div className="min-[1109px]:flex-[1] min-[1109px]:mx-1 min-[1517px]:flex-[2]">
+                    <div className={`min-[1109px]:h-full rounded-lg bg-white ${
+                        locError('dropoffLocation') ? 'border border-red-600' : 'border border-gray-200'
+                    }`}>
+                      <LocationInput
+                          variant="flat"
+                          name="dropoffLocation"
+                          label="Drop-off location"
+                          placeholder="City or airport"
+                          control={control}
+                          rules={{
+                            validate: (v: LocationResult | null) => {
+                              const { sameDropoff: same } = getValues()
+                              if (!same && !v) return 'Drop-off location is required — select from the list'
+                              return true
+                            },
+                          }}
+                          error={locError('dropoffLocation')}
+                      />
+                    </div>
+                    {locError('dropoffLocation') && (
+                        <p className="min-[1109px]:hidden mt-1 text-xs text-red-600 px-1" role="alert">{locError('dropoffLocation')}</p>
+                    )}
+                  </div>
               )}
-            </button>
-            {submitError && (
-              <p className="mt-1 text-center text-xs text-red-600 min-[1109px]:text-right" role="alert">
-                {submitError}
-              </p>
-            )}
+
+              {/* Pick-up date + time */}
+              <div className="flex flex-col min-[1109px]:flex-1 min-[1109px]:mx-1">
+                <div className={`group relative flex items-stretch rounded-lg bg-white divide-x divide-gray-200 ${
+                    dateError('pickupDate') || errors.pickupTime?.message ? 'border border-red-600' : 'border border-gray-200'
+                }`}>
+                  <div className="flex-1 min-w-0">
+                    <DatePickerInput
+                        variant="flat"
+                        name="pickupDate"
+                        label="Pick-Up Date"
+                        control={control}
+                        minDate={TODAY}
+                        rules={{
+                          validate: (v: Date | null) => v !== null || 'Pick-up date is required',
+                        }}
+                        error={dateError('pickupDate')}
+                    />
+                  </div>
+                  <div className="w-24 shrink-0">
+                    <TimeSelect
+                        variant="flat"
+                        name="pickupTime"
+                        label="Time"
+                        control={control}
+                        rules={{ required: 'Pick-up time is required' }}
+                    />
+                  </div>
+                  {errors.pickupTime?.message && (
+                      <FieldError message={errors.pickupTime.message} id="pickupTime-error" className="hidden min-[1109px]:block" />
+                  )}
+                </div>
+                {(dateError('pickupDate') || errors.pickupTime?.message) && (
+                    <p className="min-[1109px]:hidden mt-1 text-xs text-red-600 px-1" role="alert">
+                      {dateError('pickupDate') || errors.pickupTime?.message}
+                    </p>
+                )}
+              </div>
+
+              {/* Return date + time */}
+              <div className="flex flex-col min-[1109px]:flex-1 min-[1109px]:mx-1">
+                <div className={`group relative flex items-stretch rounded-lg bg-white divide-x divide-gray-200 ${
+                    dateError('returnDate') || errors.returnTime?.message ? 'border border-red-600' : 'border border-gray-200'
+                }`}>
+                  <div className="flex-1 min-w-0">
+                    <DatePickerInput
+                        variant="flat"
+                        name="returnDate"
+                        label="Return Date"
+                        control={control}
+                        minDate={returnMinDate}
+                        rules={{
+                          validate: (v: Date | null) => {
+                            if (!v) return 'Return date is required'
+                            const { pickupDate: pd } = getValues()
+                            if (pd && v < pd) return 'Return date must be on or after pick-up date'
+                            return true
+                          },
+                        }}
+                        error={dateError('returnDate')}
+                    />
+                  </div>
+                  <div className="w-24 shrink-0">
+                    <TimeSelect
+                        variant="flat"
+                        name="returnTime"
+                        label="Time"
+                        control={control}
+                        rules={{
+                          validate: (returnTime: string) => {
+                            const { pickupDate: pd, returnDate: rd, pickupTime: pt } = getValues()
+                            if (!pd || !rd) return true
+                            const sameDay =
+                                pd.getFullYear() === rd.getFullYear() &&
+                                pd.getMonth() === rd.getMonth() &&
+                                pd.getDate() === rd.getDate()
+                            if (!sameDay) return true
+                            const [ph, pm] = pt.split(':').map(Number)
+                            const [rh, rm] = returnTime.split(':').map(Number)
+                            const pickupMins = ph * 60 + pm
+                            const returnMins = rh * 60 + rm
+                            return (
+                                returnMins - pickupMins >= 60 ||
+                                'Return time must be at least one hour after pick-up on the same day'
+                            )
+                          },
+                        }}
+                    />
+                  </div>
+                  {errors.returnTime?.message && (
+                      <FieldError message={errors.returnTime.message} id="returnTime-error" className="hidden min-[1109px]:block" />
+                  )}
+                </div>
+                {(dateError('returnDate') || errors.returnTime?.message) && (
+                    <p className="min-[1109px]:hidden mt-1 text-xs text-red-600 px-1" role="alert">
+                      {dateError('returnDate') || errors.returnTime?.message}
+                    </p>
+                )}
+              </div>
+
+              {/* Search button */}
+              <div className="flex flex-col justify-center min-[1109px]:shrink-0 min-[1109px]:mx-1">
+                <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 disabled:bg-blue-600/60 disabled:cursor-not-allowed disabled:opacity-80 min-[1109px]:w-auto min-[1109px]:whitespace-nowrap"
+                >
+                  {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        <span>Searching...</span>
+                      </>
+                  ) : (
+                      <>
+                        <Search className="h-4 w-4" aria-hidden="true" />
+                        <span>Search</span>
+                      </>
+                  )}
+                </button>
+                {submitError && (
+                    <p className="mt-1 text-center text-xs text-red-600 min-[1109px]:text-right" role="alert">
+                      {submitError}
+                    </p>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
-        {[
-          '✓ Free cancellation on most bookings',
-          '✓ 60,000+ locations',
-          '✓ Customer support in 30+ languages',
-        ].map((badge) => (
-            <span key={badge} className="text-xs text-white/90">{badge}</span>
-        ))}
-        <div className="flex justify-end">
-          <PriceAlertCheckbox control={control} />
-        </div>
-      </div>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+            {[
+              '✓ Free cancellation on most bookings',
+              '✓ 60,000+ locations',
+              '✓ Customer support in 30+ languages',
+            ].map((badge) => (
+                <span key={badge} className="text-xs text-white/90">{badge}</span>
+            ))}
+            <div className="flex justify-end">
+              <PriceAlertCheckbox control={control} />
+            </div>
+          </div>
 
 
-    </form>
+        </form>
       </div>
   )
 }
