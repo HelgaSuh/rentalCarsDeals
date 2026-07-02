@@ -24,14 +24,14 @@ export function TimeSelect({ name, label, control, rules, error, variant }: Time
     const errorId = error ? `${name}-error` : undefined
 
     return (
-        <div className="flex flex-col relative h-full">
+        <div className="flex flex-col relative h-full group">
             <Controller
                 name={name}
                 control={control}
                 rules={rules}
                 render={({ field }) => (
                     <>
-                        <div className={variant === 'flat' ? 'flex flex-col px-3 py-3 h-full' : 'flex flex-col rounded-lg border border-gray-200 bg-white px-3 py-3 h-full'}>
+                        <div className={variant === 'flat' ? 'flex flex-col px-3 py-3 h-full' : 'flex flex-col rounded-lg bg-white px-3 py-3 h-full transition-colors border border-gray-200'}>
                             {error && <FieldError message={error} id={errorId} />}
                             <label htmlFor={`${name}-select`} className="mt-0.75 text-xs font-medium text-gray-500">
                                 {label}

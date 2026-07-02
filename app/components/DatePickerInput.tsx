@@ -46,7 +46,7 @@ export function DatePickerInput({ name, label, control, minDate, rules, error, v
   }, [])
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col group rounded-lg transition-colors">
       <Controller
         name={name}
         control={control}
@@ -62,10 +62,11 @@ export function DatePickerInput({ name, label, control, minDate, rules, error, v
                 aria-expanded={open}
                 aria-haspopup="dialog"
                 onClick={() => setOpen((o) => !o)}
-                className={variant === 'flat'
-                  ? 'w-full px-3 py-3 text-left text-sm font-medium text-gray-900 bg-transparent focus:outline-none'
-                  : 'w-full rounded-lg border border-gray-200 bg-white px-3 py-3 text-left text-sm font-medium text-gray-900 transition-colors hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                }
+                className={`w-full px-3 py-3 text-left text-sm font-medium text-gray-900 transition-colors focus:outline-none ${
+                  variant === 'flat' 
+                    ? 'bg-transparent' 
+                    : 'bg-white rounded-lg focus:ring-2 focus:ring-blue-500'
+                }`}
               >
                 <label className="mt-1 text-xs font-medium text-gray-500">{label}</label>
                 {field.value

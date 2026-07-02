@@ -56,7 +56,7 @@ export function LocationInput({ name, label, placeholder, control, rules, error,
   )
 
   return (
-    <div className="relative flex flex-col h-full">
+    <div className="relative flex flex-col h-full group">
       <Controller
         name={name}
         control={control}
@@ -66,7 +66,7 @@ export function LocationInput({ name, label, placeholder, control, rules, error,
             {error && <FieldError message={error} id={errorId} />}
 
             <div className="relative flex-1 flex flex-col">
-              <div className={variant === 'flat' ? 'px-3 py-3 h-full' : 'rounded-lg border border-gray-200 bg-white px-3 py-3 h-full'}>
+              <div className="px-3 py-3 h-full rounded-lg bg-white transition-colors border border-gray-200">
 
                 <label htmlFor={`${name}-input`} className="mb-1 text-xs font-medium text-gray-500">
                   {label}

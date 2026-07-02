@@ -98,7 +98,9 @@ export function SearchForm() {
         <div className="flex flex-col gap-2 min-[1109px]:flex-row min-[1109px]:flex-nowrap min-[1109px]:items-stretch min-[1109px]:gap-0">
 
           {/* Pick-up location */}
-          <div className={`rounded-lg border border-gray-200 bg-white min-[1109px]:mx-1 ${sameDropoff ? 'min-[1109px]:flex-[2]' : 'min-[1109px]:flex-[1] min-[1517px]:flex-[2]'}`}>
+          <div className={`rounded-lg bg-white min-[1109px]:mx-1 ${
+            locError('pickupLocation') ? 'border-2 border-red-600' : 'border border-gray-200'
+          } ${sameDropoff ? 'min-[1109px]:flex-[2]' : 'min-[1109px]:flex-[1] min-[1517px]:flex-[2]'}`}>
             <LocationInput
               variant="flat"
               name="pickupLocation"
@@ -115,7 +117,9 @@ export function SearchForm() {
 
           {/* Drop-off location (conditional) */}
           {!sameDropoff && (
-            <div className="rounded-lg border border-gray-200 bg-white min-[1109px]:flex-[1] min-[1109px]:mx-1 min-[1517px]:flex-[2]">
+            <div className={`rounded-lg bg-white min-[1109px]:flex-[1] min-[1109px]:mx-1 min-[1517px]:flex-[2] ${
+              locError('dropoffLocation') ? 'border-2 border-red-600' : 'border border-gray-200'
+            }`}>
               <LocationInput
                 variant="flat"
                 name="dropoffLocation"
@@ -135,7 +139,9 @@ export function SearchForm() {
           )}
 
           {/* Pick-up date + time */}
-          <div className="flex items-stretch rounded-lg border border-gray-200 bg-white divide-x divide-gray-200 min-[1109px]:flex-1 min-[1109px]:mx-1">
+          <div className={`flex items-stretch rounded-lg bg-white divide-x divide-gray-200 min-[1109px]:flex-1 min-[1109px]:mx-1 ${
+            dateError('pickupDate') || errors.pickupTime?.message ? 'border-2 border-red-600' : 'border border-gray-200'
+          }`}>
             <div className="flex-1 min-w-0">
               <DatePickerInput
                 variant="flat"
@@ -149,7 +155,7 @@ export function SearchForm() {
                 error={dateError('pickupDate')}
               />
             </div>
-            <div className="w-24 shrink-0">
+         `   <div className="w-24 shrink-0">
               <TimeSelect
                 variant="flat"
                 name="pickupTime"
@@ -162,7 +168,9 @@ export function SearchForm() {
           </div>
 
           {/* Return date + time */}
-          <div className="flex items-stretch rounded-lg border border-gray-200 bg-white divide-x divide-gray-200 min-[1109px]:flex-1 min-[1109px]:mx-1">
+          <div className={`flex items-stretch rounded-lg bg-white divide-x divide-gray-200 min-[1109px]:flex-1 min-[1109px]:mx-1 ${
+            dateError('returnDate') || errors.returnTime?.message ? 'border-2 border-red-600' : 'border border-gray-200'
+          }`}>`
             <div className="flex-1 min-w-0">
               <DatePickerInput
                 variant="flat"

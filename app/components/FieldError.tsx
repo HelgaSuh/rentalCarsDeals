@@ -8,7 +8,7 @@ export function FieldError({ message, id }: FieldErrorProps) {
     <div
       id={id}
       role="alert"
-      className="absolute top-full left-0 z-20 mt-2 max-w-[200px] rounded-md bg-red-600 px-3 py-2 text-sm text-white shadow-lg"
+      className="absolute top-full left-0 z-20 mt-2 max-w-[200px] rounded-md bg-red-600 px-3 py-2 text-sm text-white shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity"
     >
       {message}
       <span
